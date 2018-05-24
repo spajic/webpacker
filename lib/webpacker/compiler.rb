@@ -17,6 +17,7 @@ class Webpacker::Compiler
   end
 
   def compile
+    logger.info 'Enter Compiler#compile'
     if stale?
       record_compilation_digest
       run_webpack.tap do |success|
@@ -29,6 +30,12 @@ class Webpacker::Compiler
 
   # Returns true if all the compiled packs are up to date with the underlying asset files.
   def fresh?
+    logger.info 'Check fresh?'
+    if watched_files_digest != last_compilation_digest
+      logger.info 'Cache is stale!'
+      logger.info "watched_files_digest = #{watched_files_digest}"
+      logger.info "last_compilation_digest = #{last_compilation_digest}"
+    end
     watched_files_digest == last_compilation_digest
   end
 
