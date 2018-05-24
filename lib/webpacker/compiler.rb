@@ -80,7 +80,10 @@ class Webpacker::Compiler
     def run_webpack
       logger.info "Compiling…"
 
-      stdout, stderr, status = Open3.capture3(webpack_env, "#{RbConfig.ruby} ./bin/webpack")
+      # stdout, stderr, status = Open3.capture3(webpack_env, "#{RbConfig.ruby} ./bin/webpack")
+      Open3.popen3(webpack_env, "#{RbConfig.ruby} ./bin/webpack") do |stdout, stderr, status, thread|
+        logger.info stdout.read
+      end
       logger.info stdout
       logger.error stderr
 
