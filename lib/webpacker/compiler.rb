@@ -46,6 +46,18 @@ class Webpacker::Compiler
 
   private
     def last_compilation_digest
+      if compilation_digest_path.exist?
+        logger.info "Compilation digest exists!"
+      else
+        logger.info "Compilation digest DOES NOT EXIST!"
+      end
+
+      if config.public_manifest_path.exist?
+        logger.info "Public manifest exists at config.public_manifest_path"
+      else
+        logger.info "Public manifest DOES NOT EXIST at #{config.public_manifest_path}"
+      end
+
       compilation_digest_path.read if compilation_digest_path.exist? && config.public_manifest_path.exist?
     rescue Errno::ENOENT, Errno::ENOTDIR
     end
@@ -91,9 +103,11 @@ class Webpacker::Compiler
     end
 
     def compilation_digest_path
-      digest_path = config.cache_path.join(".last-compilation-digest-#{Webpacker.env}")
-      logger.info "compilation_digest_path: #{digest_path}"
-      digest_path
+      @_compilation_digest_path ||= begin
+        digest_path = config.cache_path.join(".last-compilation-digest-#{Webpacker.env}")
+        logger.info "compilation_digest_path: #{digest_path}"
+        digest_path
+      end
     end
 
     def webpack_env
